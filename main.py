@@ -1,28 +1,65 @@
-from fastapi import FastAPI, Request, Form, Query
+from fastapi import FastAPI, Request, Form, Query, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+# from sqlalchemy import create_engine, Column, Integer, String
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker, Session
+# from databases import Database
 
-app = FastAPI()
+# DATABASE_URL = "postgresql://myuser:mypassword@localhost/mydatabase"
+
+# # Создание базы данных для асинхронных операций
+# database = Database(DATABASE_URL)
+
+# # Создание SQLAlchemy ORM модели
+# Base = declarative_base()
+
+# class User(Base):
+#     __tablename__ = "Users"
+    
+#     id = Column(Integer, primary_key=True, index=True)
+#     name = Column(String, index=True)
+    
+app = FastAPI()   
+
+# @app.on_event("startup")
+# async def startup():
+#     await database.connect()
+
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await database.disconnect()
+
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def login(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "result": "jinja argument"})
+    return templates.TemplateResponse("index.html", {"request": request, "argument": "jinja argument"})
 
 @app.get("/success", response_class=HTMLResponse)
-async def success(username: str = Query(...), password: str = Query(...)):
+async def success(request: Request, username: str = Query(...), password: str = Query(...)):
     print(username, password)
-    return templates.TemplateResponse("base.html", {"result": "text"})
-    # return {"name": username, "password": password}
+    return templates.TemplateResponse("base.html", {"argument": f"{username}, {password}", "request": request})
+    # return {"name": username, "password": password, "request": request}
 
-
-@app.post("/")
-def loginPostReqest(username=Form(), password=Form()):
+@app.post("/submit")
+async def loginPostReqest(username:str = Form(), password: str = Form()):
     if (str(username) == "qwe" and str(password) == "123"):
-        return RedirectResponse(f"/success?username={username}&password={password}")
+        # print(username)
+        # return {"ok": 123}
+        return RedirectResponse(url=f"/success?username={username}&password={password}", status_code=303)
     return {"error": "not valid"}
+
+
+# @app.post("/add_user/")
+# async def create_book(name: str):
+#     query = Users.__table__.insert().values(name=name)
+#     last_record_id = await database.execute(query)
+#     return {"id": last_record_id}
+
 
 # @app.route('/registration', methods=['GET', 'POST'])
 # def registration():
