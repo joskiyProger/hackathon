@@ -1,0 +1,27 @@
+{% extends 'admin_panel_base.html' %}
+
+{% block registration %}
+<div class="container my-3">
+    <div class="container my-5">
+      
+      <h2>Регистрация нового менеджера</h2>
+      <form action="createOffice" method="post">
+          <div class="mb-3">
+          <label for="mail" class="form-label">Электронная почта сотрудника:</label>
+          <input type="text" class="form-control" id="mail" name="mail" placeholder="Введите Электронную почту" required>
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Филиал:</label>
+          <input type="text" class="form-control" id="location" name="location" placeholder="Введите адрес" required>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-primary">Зарегистрировать</button>
+          </div>
+        </div> 
+      </form>
+    </div>
+  </div>
+  
+{% endblock %}
+

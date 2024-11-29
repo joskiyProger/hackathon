@@ -1,56 +1,139 @@
-from fastapi import FastAPI, Request, Form, Query, Depends
+from fastapi import FastAPI, Request, Form, Query, Depends, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-# from sqlalchemy import create_engine, Column, Integer, String
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker, Session
-# from databases import Database
+from datetime import datetime
+import uuid
+from fastapi.exceptions import HTTPException
+import smtplib
+from email.mime.text import MIMEText
+import hashlib
+import passlib
+from passlib.context import CryptContext
 
-# DATABASE_URL = "postgresql://myuser:mypassword@localhost/mydatabase"
+app = FastAPI()
 
-# # Создание базы данных для асинхронных операций
-# database = Database(DATABASE_URL)
+OWN_EMAIL = "kChudinovv@yandex.ru"
+OWN_EMAIL_PASSWORD = "abfojocivtpcdoqc"
 
-# # Создание SQLAlchemy ORM модели
-# Base = declarative_base()
 
-# class User(Base):
-#     __tablename__ = "Users"
+def send_email(message: str):
+    try:
+        msg = MIMEText(message, "plain", "utf-8")
+        # msg['Subject'] = "Добавление нового сотрудника"
+        # msg['From'] = f'Denolyrics <{OWN_EMAIL}>'
+        # msg['To'] = "k_chudinovv@mail.ru"
+
+        port = 587
+        server = smtplib.SMTP("smtp.yandex.ru", port, timeout=10)
+        
+        server.starttls()
+        print(OWN_EMAIL, OWN_EMAIL_PASSWORD)
+        
+        server.login(OWN_EMAIL, OWN_EMAIL_PASSWORD)
+        
+        server.sendmail(OWN_EMAIL, "k_chudinovv@mail.ru", msg.as_string())
+        
+        server.quit()
+        return {"message": "Email sent successfully"}
+
+    except Exception as e:
+        error_data = {
+            "error": "Failed to send email",
+            "details": str(e)
+        }
+        return error_data
+
+# @app.post("/email")
+# def send_email(message: str):
+#     try:
+#         msg = MIMEText(message)
+#         msg['Subject'] = "Добвление нового сотрудника"
+#         # msg['From'] = f'Denolyrics <{OWN_EMAIL}>'
+#         # msg['To'] = body.to
+
+#         print(1)
+#         port = 587
+#         server = smtplib.SMTP_SSL("smtp.gmail.com", port)
+        
+#         print(2)
+#         server.starttls()
+#         server.login(OWN_EMAIL, OWN_EMAIL_PASSWORD)
+#         server.sendmail(OWN_EMAIL, "k_chudinovv@mail.ru", msg.as_string())
+#         server.quit()
+#         return {"message": "Email sent successfully"}
+
+#     except Exception as e:
+#         # return {"error": "unknown"}
+#         error_data = {
+#             "error": "Failed to send email",
+#             "details": str(e)
+#         }
+#         return error_data
+#         raise HTTPException(status_code=500, detail=e)
     
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(String, index=True)
-    
-app = FastAPI()   
-
-# @app.on_event("startup")
-# async def startup():
-#     await database.connect()
-
-# @app.on_event("shutdown")
-# async def shutdown():
-#     await database.disconnect()
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+@app.post("/loginPost", response_class=HTMLResponse)
+async def loginPost(request: Request, response : Response, password: str = Form(), login:str = Form()):
+    if login == "123" and password == "123": # надо будет сделать проверку с данными из бд
+        response = RedirectResponse(url=f"/personalAccount", status_code=303)
+        uid = uuid.uuid4()
+        response.set_cookie(key="uid", value=str(uid))
+        response.set_cookie(key="admin_rights", value=1)
+        # по логину обратиться в бд и в поле юид запихнуть юид кторый я тут засунул в куки
+        return response
+    else:
+        return templates.TemplateResponse("login.html", {"request": request, "valid_status": "Неверное имя пользователя или пароль!"})   
+    
 @app.get("/", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "argument": "jinja argument"})
+async def index(request: Request, response : Response):
+    response = templates.TemplateResponse("login.html", {"request": request})
+    response.delete_cookie("uid")
+    response.set_cookie(key="admin_rights", value=0)
+    return response
+
+
+@app.get("/leaderboard", response_class=HTMLResponse)
+async def leaderboard(request: Request, response : Response):
+    if request.cookies.get("uid"):
+        response = templates.TemplateResponse("leaderboard.html", {"request": request})
+        return response
+    else: 
+        return RedirectResponse(url=f"/", status_code=303)
+
+
+@app.get("/personalAccount", response_class=HTMLResponse)
+async def personalAccount(request: Request, response : Response):
+    if request.cookies.get("uid"):
+        response = templates.TemplateResponse("personal_account.html", {"request": request})
+        return response
+    else: 
+        return RedirectResponse(url=f"/", status_code=303)
+
 
 @app.get("/success", response_class=HTMLResponse)
-async def success(request: Request, username: str = Query(...), password: str = Query(...)):
-    print(username, password)
+async def success(response : Response, request: Request, username: str = Query(...), password: str = Query(...)):
+    # print(send_email("test msg"))
     return templates.TemplateResponse("base.html", {"argument": f"{username}, {password}", "request": request})
-    # return {"name": username, "password": password, "request": request}
 
 @app.post("/submit")
-async def loginPostReqest(username:str = Form(), password: str = Form()):
-    if (str(username) == "qwe" and str(password) == "123"):
-        # print(username)
-        # return {"ok": 123}
-        return RedirectResponse(url=f"/success?username={username}&password={password}", status_code=303)
+async def submit(response : Response,  username:str = Form(), password: str = Form()):
+    if (str(username) and str(password) == "123"):
+        uid = uuid.uuid4()
+        password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        hashed_password = password_context.hash(password)
+        hashed_user = password_context.hash(username)
+        # h.update(username.encode())
+        # hashed_user = h.hexdigest()
+        print(hashed_password, hashed_user)
+        print(password_context.verify(password, hashed_password))
+        response = RedirectResponse(url=f"/success?username={username}&password={password}", status_code=303)
+        response.set_cookie(key="uid", value=str(uid))
+        return response
     return {"error": "not valid"}
 
 

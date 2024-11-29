@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Таблица лидеров{% endblock %}
+
+{% block body %}
+<header class="header">
+      <div class="container d-flex justify-content-between align-items-center">
+          <nav class="header-nav">
+              <ul class="nav-list">
+                  <li class="nav-item"><a href="/leaderboard">Таблица лидеров</a></li>
+                  <li class="nav-item"><a href="/personalAccount">Личный кабинет</a></li>
+              </ul>
+          </nav>
+        <div class="header-actions">
+          <a href="/" class="btn btn-primary">Выйти</a>
+        </div> 
+      </div>
+  </header>
+{% endblock %}
