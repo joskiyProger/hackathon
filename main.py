@@ -1,3 +1,4 @@
+import dbcon
 from fastapi import FastAPI, Request, Form, Query, Depends, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +11,7 @@ from email.mime.text import MIMEText
 import hashlib
 import passlib
 from passlib.context import CryptContext
+
 
 app = FastAPI()
 
@@ -76,6 +78,8 @@ def send_email(message: str):
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+dbcon.add_oleg_to_db()
 
 @app.post("/loginPost", response_class=HTMLResponse)
 async def loginPost(request: Request, response : Response, password: str = Form(), login:str = Form()):
