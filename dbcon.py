@@ -1,7 +1,7 @@
 from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy import create_engine, Integer, String, Numeric, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -21,8 +21,6 @@ class Branch(Base):
     city: Mapped[str] = mapped_column(String(30), primary_key=True)
     total_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False)
     
-    employees = relationship("Employee", back_populates="branch")
-    
 
     def __repr__(self):
         return f"Branch(city='{self.city}', total_money={self.total_money})"
@@ -39,10 +37,10 @@ class Employee(Base):
     email: Mapped[str] = mapped_column(String(100), nullable=False)
     password: Mapped[str] = mapped_column(String(50), nullable=False)
     branch: Mapped[str] = mapped_column(String(30), ForeignKey("branches.city"), nullable=False)
-    total_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False)
-    
-    branch_relation = relationship("Branch", back_populates="employees")
-    transactions = relationship("Transaction", back_populates="employee") 
+    total_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False, default=0)
+    max_month_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False, default=0) 
+
+    branch_relation = relationship("Branch", backref="employees")
 
 
     def __repr__(self):
@@ -59,12 +57,18 @@ class Transaction(Base):
     money: Mapped[Numeric] = mapped_column(Numeric, nullable=False)
     date_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     
-    employee = relationship("Employee", back_populates="transactions")
+    employee = relationship("Employee", backref="transactions")
     
 
     def __repr__(self):
-        return (f"<Transaction(id={self.id}, employee_id={self.employee_id}, "
-                f"money={self.money}, date_time='{self.date_time}')>")
+        return (f"Transaction(id={self.id}, employee_id={self.employee_id}, "
+                f"money={self.money}, date_time='{self.date_time}')")
+
+
+def get_employees():
+    with engine.connect() as conn:
+        result = conn.execute(select(Employee))
+        return result
 
 
 def add_oleg_to_db():
