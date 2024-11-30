@@ -1,7 +1,7 @@
 from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy import create_engine, Integer, String, Numeric, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -65,13 +65,58 @@ class Transaction(Base):
                 f"money={self.money}, date_time='{self.date_time}')")
 
 
-def get_employees():
+def is_login_valid(email, password):
     with engine.connect() as conn:
-        result = conn.execute(select(Employee))
-        return result
+        return len(conn.execute(select(Employee).filter_by(email=email, \
+           password=password)).all()) == 1
+
+
+def is_uid_exist(uid):
+    with engine.connect() as conn:
+        return len(conn.execute(select(Employee).filter_by(uid=uid)).all()) == 1
+
+
+def set_uid(email, uid):
+    with engine.connect() as conn:
+        stmt = conn.execute(update(Employee).where(Employee.email == email).values(uid=uid))
+        conn.commit()
+
+
+def get_employee_by_uid(uid):
+    with engine.connect() as conn:
+        employee = conn.execute(select(Employee).filter_by(uid=uid)).all()[0]
+        employee = \
+            { 'uid': employee.uid, 'surname': employee.surname, 'name': employee.name, \
+              'patronymic': employee.patronymic, 'email': employee.email, \
+              'branch': employee.branch, 'total_money': float(employee.total_money), \
+              'max_month_money': float(employee.max_month_money) }
+        return { "employee": employee }
+
+
+def get_all_data():
+    with engine.connect() as conn:
+        employees = conn.execute(select(Employee))
+        employees = \
+            [{ 'uid': empl.uid, 'surname': empl.surname, 'name': empl.name, \
+              'patronymic': empl.patronymic, 'email': empl.email, \
+              'branch': empl.branch, 'total_money': int(empl.total_money), \
+              'max_month_money': int(empl.max_month_money) } for empl in employees]
+
+        branches = conn.execute(select(Branch))
+        branches_list = [{ 'city': branch.city, 'money': int(branch.total_money) } \
+                for branch in branches]
+
+        transactions = conn.execute(select(Transaction))
+        transactions_list = [{ 'employee_id': t.employee_id, 'money': int(t.money), \
+                'date_time': t.date_time} for t in transactions]
+
+        data = \
+            { "branches": branches_list, "transactions": transactions_list, "employees": employees }
+        return data
 
 
 def add_oleg_to_db():
+    """Most useful function of this module"""
     with engine.connect() as conn:
         stmt = insert(Employee).values(surname="Олегов", name="Олег", patronymic="Фёдрович",
             email="heh@gmail.com", password="hihihaha", branch="Новосибирск", total_money=0)

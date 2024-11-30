@@ -45,7 +45,8 @@ CREATE TABLE public.employees (
     email character varying(100) NOT NULL,
     password character varying(50) NOT NULL,
     branch character varying(30) NOT NULL,
-    total_money numeric NOT NULL
+    total_money numeric NOT NULL,
+    max_month_money numeric DEFAULT 0 NOT NULL
 );
 
 

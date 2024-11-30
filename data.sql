@@ -33,32 +33,33 @@ COPY public.branches (city, total_money) FROM stdin;
 -- Data for Name: employees; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.employees (id, uid, surname, name, patronymic, email, password, branch, total_money) FROM stdin;
-1	\N	Иванов	Иван	Иванович	ivan.ivanov@example.com	a8R&jt3Jkbnf1d!	Москва	0
-2	\N	Петров	Петр	Петрович	petr.petrov@example.com	C7%DkGn#1ytb8&x	Санкт-Петербург	0
-3	\N	Сергеев	Сергей	Сергеевич	sergey.sergeev@example.com	W2@zNc6!uv8nB3q	Новосибирск	0
-4	\N	Антонова	Анна	Александровна	anna.antonova@example.com	R5%mK6@z1uCv7#B	Екатеринбург	0
-5	\N	Соколова	Мария	Николаевна	maria.sokolova@example.com	F1^vGt8&j2Kq9*d	Казань	0
-6	\N	Дмитриев	Дмитрий	Дмитриевич	dmitry.dmitriev@example.com	U3*Fj2@b6nK9%z!	Москва	0
-7	\N	Алексеев	Алексей	Алексеевич	alexey.alekseev@example.com	J4*wV9#nt6Zg2d&	Санкт-Петербург	0
-8	\N	Светлова	Светлана	Сергеевна	svetlana.svetlova@example.com	R8%nF1@j3Kb5*C!	Новосибирск	0
-9	\N	Юрьева	Юлия	Александровна	yuliya.yuryeva@example.com	H9@tD6*Qz3Fb1#y	Екатеринбург	0
-10	\N	Николаев	Николай	Николаевич	nikolay.nikolaev@example.com	S2&kT5!wR1*Vj7#A	Казань	0
-11	\N	Олегова	Ольга	Станиславовна	olga.olegov@example.com	T8#yE3@f1!gZ9*K	Москва	0
-12	\N	Андреев	Андрей	Андреевич	andrey.andreev@example.com	Q1&bG7*c!D6#n9Z	Санкт-Петербург	0
-13	\N	Еленина	Елена	Викторовна	elena.elenina@example.com	W4@dN5*Jc%F3z7&v	Новосибирск	0
-14	\N	Викторов	Виктор	Викторович	viktor.viktorov@example.com	Y2#nH1@Zk7*mR5#D	Екатеринбург	0
-15	\N	Дарьянова	Дарья	Анатольевна	darya.daryanova@example.com	E3$zQ9*t!W8#j1&Z	Казань	0
-16	\N	Романов	Роман	Романович	roman.romanov@example.com	M5&vT8!g*H0#b2Z	Москва	0
-17	\N	Иркина	Ирина	Игоревна	irina.irkina@example.com	C2@qF7^g1*V9*r	Санкт-Петербург	0
-18	\N	Татянова	Татьяна	Федоровна	tatjana.tatyanova@example.com	H1*eX8#c6$W3+n!	Новосибирск	0
-19	\N	Анастасьева	Анастасия	Станиславовна	anastasia.anastaseva@example.com	R4*eY3@G7&fT8#1	Екатеринбург	0
-20	\N	Максимов	Максим	Матвеевич	maksim.maksimov@example.com	G1@eZ9&b3*C2#vF	Казань	0
-21	\N	Кириллов	Кирилл	Антонович	kirill.kirillov@example.com	J3*wQ6#n7!A2^Zf	Москва	0
-22	\N	Егоров	Егор	Сергеевич	egor.egorov@example.com	T7*bJ1%zN6@w8#R	Санкт-Петербург	0
-23	\N	Станиславов	Станислав	Анатольевич	stanislav.stanislavov@example.com	F4^dG1@Q5*J9&8	Новосибирск	0
-24	\N	Артемьев	Артем	Игоревич	artem.artemiev@example.com	Y8&jP2#k3^V4*nF	Екатеринбург	0
-25	\N	Людмилова	Людмила	Александровна	lyudmila.lyudmilova@example.com	E5!kH9@z4*D2#J	Казань	0
+COPY public.employees (id, uid, surname, name, patronymic, email, password, branch, total_money, max_month_money) FROM stdin;
+5		Соколова	Мария	Николаевна	maria.sokolova@example.com	F1^vGt8&j2Kq9*d	Казань	0	0
+6		Дмитриев	Дмитрий	Дмитриевич	dmitry.dmitriev@example.com	U3*Fj2@b6nK9%z!	Москва	0	0
+7		Алексеев	Алексей	Алексеевич	alexey.alekseev@example.com	J4*wV9#nt6Zg2d&	Санкт-Петербург	0	0
+8		Светлова	Светлана	Сергеевна	svetlana.svetlova@example.com	R8%nF1@j3Kb5*C!	Новосибирск	0	0
+9		Юрьева	Юлия	Александровна	yuliya.yuryeva@example.com	H9@tD6*Qz3Fb1#y	Екатеринбург	0	0
+10		Николаев	Николай	Николаевич	nikolay.nikolaev@example.com	S2&kT5!wR1*Vj7#A	Казань	0	0
+11		Олегова	Ольга	Станиславовна	olga.olegov@example.com	T8#yE3@f1!gZ9*K	Москва	0	0
+12		Андреев	Андрей	Андреевич	andrey.andreev@example.com	Q1&bG7*c!D6#n9Z	Санкт-Петербург	0	0
+13		Еленина	Елена	Викторовна	elena.elenina@example.com	W4@dN5*Jc%F3z7&v	Новосибирск	0	0
+14		Викторов	Виктор	Викторович	viktor.viktorov@example.com	Y2#nH1@Zk7*mR5#D	Екатеринбург	0	0
+15		Дарьянова	Дарья	Анатольевна	darya.daryanova@example.com	E3$zQ9*t!W8#j1&Z	Казань	0	0
+16		Романов	Роман	Романович	roman.romanov@example.com	M5&vT8!g*H0#b2Z	Москва	0	0
+17		Иркина	Ирина	Игоревна	irina.irkina@example.com	C2@qF7^g1*V9*r	Санкт-Петербург	0	0
+18		Татянова	Татьяна	Федоровна	tatjana.tatyanova@example.com	H1*eX8#c6$W3+n!	Новосибирск	0	0
+19		Анастасьева	Анастасия	Станиславовна	anastasia.anastaseva@example.com	R4*eY3@G7&fT8#1	Екатеринбург	0	0
+20		Максимов	Максим	Матвеевич	maksim.maksimov@example.com	G1@eZ9&b3*C2#vF	Казань	0	0
+21		Кириллов	Кирилл	Антонович	kirill.kirillov@example.com	J3*wQ6#n7!A2^Zf	Москва	0	0
+22		Егоров	Егор	Сергеевич	egor.egorov@example.com	T7*bJ1%zN6@w8#R	Санкт-Петербург	0	0
+23		Станиславов	Станислав	Анатольевич	stanislav.stanislavov@example.com	F4^dG1@Q5*J9&8	Новосибирск	0	0
+24		Артемьев	Артем	Игоревич	artem.artemiev@example.com	Y8&jP2#k3^V4*nF	Екатеринбург	0	0
+41		Олегов	Олег	Фёдрович	heh@gmail.com	hihihaha	Новосибирск	0	0
+25		Людмилова	Людмила	Александровна	lyudmila.lyudmilova@example.com	E5!kH9@z4*D2#J	Казань	0	0
+4		Антонова	Анна	Александровна	anna.antonova@example.com	R5%mK6@z1uCv7#B	Екатеринбург	0	0
+3		Сергеев	Сергей	Сергеевич	sergey.sergeev@example.com	W2@zNc6!uv8nB3q	Новосибирск	0	0
+1		Иванов	Иван	Иванович	ivan.ivanov@example.com	a8R&jt3Jkbnf1d!	Москва	0	0
+2		Петров	Петр	Петрович	petr.petrov@example.com	C7%DkGn#1ytb8&x	Санкт-Петербург	0	0
 \.
 
 
@@ -179,7 +180,7 @@ COPY public.transactions (id, employee_id, money, date_time) FROM stdin;
 -- Name: employees_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employees_id_seq', 25, true);
+SELECT pg_catalog.setval('public.employees_id_seq', 95, true);
 
 
 --
