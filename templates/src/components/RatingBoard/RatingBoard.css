@@ -1,0 +1,42 @@
+.rating-comp{
+    padding: 20px 50px;
+}
+.rating-board {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6;
+}
+.rating-item{
+    background-color: white;
+    padding: 4px;
+    margin-bottom: 10px;
+    align-items: center;
+    border-radius: 4px;
+    width: 100%;
+    display: flex;
+    gap: 15px;
+}
+.star{
+    color: orange;
+    font-weight: 400;
+}
+.item-without-star{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 8px;
+    font-size: 18px;
+    width: 24px;
+}
+.user-name{
+    margin-left: 14px;
+}
+@media(max-width:600px){
+    .rating-board{
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    .rating-items{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}

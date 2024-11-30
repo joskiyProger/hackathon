@@ -25,6 +25,10 @@ pip --version #команды для проверки успешности ут�
 
 Для создания виртуального окружения используйте команду python -m venv ИМЯ ОКРУЖЕНИЯ и активируйте его source ИМЯ ОКРУЖЕНИЯ/bin/activate. После этого можно устанавливать фреймворки для Python.
 ```
+git checkout develop
+apt install python3.12-venv
+python -m venv .venv
+source .venv/bin/activate
 pip install psycopg2-binary
 sudo apt install libpq-dev python3-dev
 pip install -r requirements.txt
@@ -34,22 +38,24 @@ pip install -r requirements.txt
 
 В нашем проекте была использована база данных PostgreSQL. Чтобы иметь возможность взаимодействовать с ней через терминал используйте команды:
 ```
-- sudo apt install postgresql postgresql-contrib
-- psql --version проверка успешного выполнения
-- sudo service postgresql start запуск сервера
-- sudo -u postgres psql открытие консоли для работы с PostgreSQL
+sudo apt install postgresql postgresql-contrib
+psql --version проверка успешного выполнения
+sudo service postgresql start запуск сервера
+sudo -u postgres psql открытие консоли для работы с PostgreSQL
 ```
 
 ## Восстановление БД
 
 Чтобы создать БД, выполни эти команды из корня репозитория (скопируй и вставь в терминал):
 ```
-sudo nano /etc/postgresql/14/main/pg_hba.conf #заменить в этом файле первые три подключения на trust
+
 sudo -u postgres dropdb motivation_storage # Удаляет БД, если она уже была
 sudo -u postgres createdb motivation_storage
 psql -U postgres -d motivation_storage -f schema.sql # Восстанавливает таблицы
 psql -U postgres -d motivation_storage -f data.sql # Восстанавливает данные таблиц
 ```
+>Если будут выводиться надписи `Permission denied` зайдите в файл
+`sudo nano /etc/postgresql/[version]/main/pg_hba.conf` #замените в этом файле первые четыре подключения на trust
 
 # Запуск
 

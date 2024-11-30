@@ -1,22 +1,27 @@
 import dbcon
 import json
 from fastapi import FastAPI, Request, Form, Query, Depends, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
 import uuid
 from fastapi.exceptions import HTTPException
-import smtplib
-import hashlib
-import passlib
-from passlib.context import CryptContext
 
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+
+@app.post("/resetTransactionsData", response_class=JSONResponse)
+async def loginPost(password: str = Form()):
+    if password == "123":
+        dbcon.reset_all_transactions()
+        return {"message": "data restored"}
+    else:
+        return {"message": "permission denied"}
 
 
 @app.post("/loginPost", response_class=HTMLResponse)
@@ -32,15 +37,15 @@ async def loginPost(request: Request, response : Response, password: str = Form(
         return templates.TemplateResponse("login.html", {"request": request, "valid_status": "Неверное имя пользователя или пароль!"})   
 
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request, response : Response):
+@app.get("/login", response_class=HTMLResponse)
+async def login(request: Request, response : Response):
     response = templates.TemplateResponse("login.html", {"request": request})
     response.delete_cookie("uid")
     response.set_cookie(key="admin_rights", value=0)
     return response
 
 
-@app.get("/leaderboard", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 async def leaderboard(request: Request, response : Response):
     if dbcon.is_uid_exist(request.cookies.get("uid")):
         data = { "request": request } | dbcon.get_all_data()

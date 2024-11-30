@@ -1,0 +1,19 @@
+.rating{
+    background-image: url('../../assets/rating-bg.png');
+}
+.rating-menu{
+    display: flex;
+    gap: 20px;
+    align-items:center;
+    padding: 30px 50px;
+}
+.rating-menu li{
+    padding: 30px 50px;
+    background-color: #121A2F;
+    color: white;
+    text-transform: uppercase;
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    /* font-weight: 100; */
+}

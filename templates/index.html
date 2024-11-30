@@ -1,25 +1,14 @@
-{% extends 'base.html' %}
-
-{% block title %}Главная сраница{% endblock %}
-
-{% block body %}
-<div class="container my-3">
-  <div class="container my-5">
-    <form action="submit" method="post">
-        <div class="mb-3">
-        <label for="username" class="form-label">Логин:</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Введите логин" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Пароль:</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль" required>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <button type="submit" class="btn btn-primary">Войти</button>
-        </div>
-      </div> 
-    </form>
-  </div>
-</div>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link href="./output.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Рейтинг</title>
+  </head>
+  <body>  
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

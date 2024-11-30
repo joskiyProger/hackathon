@@ -1,0 +1,14 @@
+.navbar{
+    background-image: url("../../assets/bg-img.png");
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    align-items: center;
+}
+.navbar p{
+    color: white;
+    font-size: 24px;
+}
+.navbar img{
+    width: 50px;
+}
