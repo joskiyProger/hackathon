@@ -1,7 +1,7 @@
 from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, delete
 from sqlalchemy import create_engine, Integer, String, Numeric, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -86,10 +86,16 @@ def get_employee_by_uid(uid):
     with engine.connect() as conn:
         employee = conn.execute(select(Employee).filter_by(uid=uid)).all()[0]
         employee = \
-            { 'uid': employee.uid, 'surname': employee.surname, 'name': employee.name, \
-              'patronymic': employee.patronymic, 'email': employee.email, \
-              'branch': employee.branch, 'total_money': float(employee.total_money), \
-              'max_month_money': float(employee.max_month_money) }
+            { 'id': employee.id, 'uid': employee.uid, 'surname': employee.surname, \
+            'name': employee.name, 'patronymic': employee.patronymic, 'email': employee.email, \
+            'branch': employee.branch, 'total_money': float(employee.total_money), \
+            'max_month_money': float(employee.max_month_money), 'transactions': [] }
+
+        transactions = conn.execute(select(Transaction).filter_by(employee_id=employee['id'])).all()
+        for transaction in transactions:
+            employee['transactions'].append( \
+                { 'datetime': str(transaction.date_time), 'money': float(transaction.money) })
+
         return { "employee": employee }
 
 
@@ -113,6 +119,14 @@ def get_all_data():
         data = \
             { "branches": branches_list, "transactions": transactions_list, "employees": employees }
         return data
+
+
+def reset_all_transactions():
+    with engine.connect() as conn:
+        conn.execute(delete(Transaction))
+        conn.execute(update(Employee).values(total_money=0))
+        conn.execute(update(Branch).values(total_money=0))
+        conn.commit()
 
 
 def add_oleg_to_db():
