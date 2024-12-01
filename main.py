@@ -1,5 +1,4 @@
 import dbcon
-import json
 from fastapi import FastAPI, Request, Form, Query, Depends, Response
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,12 +6,22 @@ from fastapi.templating import Jinja2Templates
 from datetime import datetime
 import uuid
 from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Allow CORS for your React app's origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Change this to your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def collect_request_info(request: Request):
@@ -23,6 +32,15 @@ def collect_request_info(request: Request):
         "url": str(request.url)
     }
     return request_info
+
+
+@app.post("/addTransaction", response_class=JSONResponse)
+async def loginPost(password: str = Form(), email: str = Form(), money: float = Form(), date: str = Form()):
+    if password == "123":
+        dbcon.create_new_transaction(email, money, date)
+        return {"message": "data added"}
+    else:
+        return {"message": "permission denied"}
 
 
 @app.post("/resetTransactionsData", response_class=JSONResponse)
@@ -59,8 +77,8 @@ async def login(request: Request, response : Response):
 async def leaderboard(request: Request, response : Response):
     if dbcon.is_uid_exist(request.cookies.get("uid")):
         request_info = collect_request_info(request)
-        full_info = {"request_info": request_info} | dbcon.get_all_data() 
-        return JSONResponse(content=full_info) 
+        data = {"request_info": request_info} | dbcon.get_all_data() | dbcon.get_employee_by_uid(request.cookies.get("uid"))
+        return JSONResponse(content=data) 
     else:
         return RedirectResponse(url=f"/login", status_code=303)
 

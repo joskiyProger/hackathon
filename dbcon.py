@@ -129,6 +129,14 @@ def reset_all_transactions():
         conn.commit()
 
 
+def create_new_transaction(email, money: float, date_time: str):
+    with engine.connect() as conn:
+        employee = conn.execute(select(Employee).filter_by(email=email)).all()[0]
+        conn.execute(insert(Transaction).values( \
+            employee_id=employee.id, money=money, date_time=date_time))
+        conn.commit()
+
+
 def add_oleg_to_db():
     """Most useful function of this module"""
     with engine.connect() as conn:
