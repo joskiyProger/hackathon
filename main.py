@@ -15,6 +15,16 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+def collect_request_info(request: Request):
+    request_info = {
+        "client_host": request.client.host,
+        "client_port": request.client.port,
+        "method": request.method,
+        "url": str(request.url)
+    }
+    return request_info
+
+
 @app.post("/resetTransactionsData", response_class=JSONResponse)
 async def loginPost(password: str = Form()):
     if password == "123":
@@ -45,19 +55,21 @@ async def login(request: Request, response : Response):
     return response
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def leaderboard(request: Request, response : Response):
     if dbcon.is_uid_exist(request.cookies.get("uid")):
-        data = { "request": request } | dbcon.get_all_data()
-        return templates.TemplateResponse("leaderboard.html", data)
-    else: 
-        return RedirectResponse(url=f"/", status_code=303)
+        request_info = collect_request_info(request)
+        full_info = {"request_info": request_info} | dbcon.get_all_data() 
+        return JSONResponse(content=full_info) 
+    else:
+        return RedirectResponse(url=f"/login", status_code=303)
 
 
 @app.get("/personalAccount", response_class=HTMLResponse)
 async def personalAccount(request: Request, response : Response):
     if dbcon.is_uid_exist(request.cookies.get("uid")):
-        data = { "request": request } | dbcon.get_employee_by_uid(request.cookies.get("uid"))
-        return templates.TemplateResponse("personal_account.html", data)
+        request_info = collect_request_info(request)
+        full_info = {"request_info": request_info} | dbcon.get_employee_by_uid(request.cookies.get("uid"))
+        return JSONResponse(content=full_info) 
     else: 
         return RedirectResponse(url=f"/", status_code=303)

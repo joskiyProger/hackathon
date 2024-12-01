@@ -38,7 +38,7 @@ class Employee(Base):
     password: Mapped[str] = mapped_column(String(50), nullable=False)
     branch: Mapped[str] = mapped_column(String(30), ForeignKey("branches.city"), nullable=False)
     total_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False, default=0)
-    # max_month_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False, default=0) 
+    max_month_money: Mapped[Numeric] = mapped_column(Numeric, nullable=False, default=0) 
 
     branch_relation = relationship("Branch", backref="employees")
 
@@ -89,8 +89,7 @@ def get_employee_by_uid(uid):
             { 'id': employee.id, 'uid': employee.uid, 'surname': employee.surname, \
             'name': employee.name, 'patronymic': employee.patronymic, 'email': employee.email, \
             'branch': employee.branch, 'total_money': float(employee.total_money), \
-            # 'max_month_money': float(employee.max_month_money), 'transactions': [] }
-            'transactions': [] }
+            'max_month_money': float(employee.max_month_money), 'transactions': [] }
 
         transactions = conn.execute(select(Transaction).filter_by(employee_id=employee['id'])).all()
         for transaction in transactions:
@@ -107,8 +106,7 @@ def get_all_data():
             [{ 'uid': empl.uid, 'surname': empl.surname, 'name': empl.name, \
               'patronymic': empl.patronymic, 'email': empl.email, \
               'branch': empl.branch, 'total_money': int(empl.total_money), \
-            #   'max_month_money': int(empl.max_month_money) } for empl in employees]
-             } for empl in employees]
+              'max_month_money': int(empl.max_month_money) } for empl in employees]
 
         branches = conn.execute(select(Branch))
         branches_list = [{ 'city': branch.city, 'money': int(branch.total_money) } \
@@ -116,7 +114,7 @@ def get_all_data():
 
         transactions = conn.execute(select(Transaction))
         transactions_list = [{ 'employee_id': t.employee_id, 'money': int(t.money), \
-                'date_time': t.date_time} for t in transactions]
+                'date_time': str(t.date_time)} for t in transactions]
 
         data = \
             { "branches": branches_list, "transactions": transactions_list, "employees": employees }
